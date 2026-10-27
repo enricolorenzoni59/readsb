@@ -342,7 +342,7 @@ void toBinCraft(struct aircraft *a, struct binCraft *new, int64_t now) {
     new->nav_altitude_fms = (uint16_t) nearbyint(a->nav_altitude_fms / 4.0);
 
     new->nav_qnh = (int16_t) nearbyint(a->nav_qnh * 10.0);
-    new->gs = (int16_t) nearbyint(a->gs * 10.0);
+    new->gs = (int16_t) nearbyint(fmax(0.0, fmin(INT16_MAX, a->gs * 10.0)));
     new->mach = (int16_t) nearbyint(a->mach * 1000.0);
 
     new->track_rate = (int16_t) nearbyint(a->track_rate * 100.0);

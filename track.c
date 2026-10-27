@@ -3538,7 +3538,7 @@ void to_state(struct aircraft *a, struct state *new, int64_t now, int on_ground,
 
     if (trackVState(now, &a->gs_valid, &a->pos_reliable_valid)) {
         new->gs_valid = 1;
-        new->gs = (uint16_t) nearbyint(a->gs * _gs_factor);
+        new->gs = (uint16_t) nearbyint(fmax(0.0, fmin(UINT16_MAX, a->gs * _gs_factor)));
     }
     if (track > -1) {
         new->track = (uint16_t) nearbyint(track * _track_factor);
