@@ -682,13 +682,17 @@ static void generate_esnt(struct uat_adsb_mdb *mdb, float ss, char *p, char *end
         return;
 
     double ss_W = pow(10.0, ss / 10.0);
-    int sig = round(sqrt(ss_W) * 255.0);
-    if (ss_W > 0 && sig < 1)
-        sig = 1;
-    if (sig > 255)
-        sig = 255;
-
-    signal_strength = (uint8_t)sig;
+    double sig_f = round(sqrt(ss_W) * 255.0);
+    // clamp in floating point: the value is not representable as int for
+    // large / infinite signal strengths, and round(nan) must not be converted
+    if (isnan(sig_f)) {
+        sig_f = 0;
+    } else if (sig_f > 255) {
+        sig_f = 255;
+    } else if (sig_f < 1 && ss_W > 0) {
+        sig_f = 1;
+    }
+    signal_strength = (uint8_t) sig_f;
 
     p = maybe_send_surface_position(mdb, p, end);
     p = maybe_send_air_position(mdb, p, end);
